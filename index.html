@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>محاضرات الرنين - أورام العظام والغضاريف</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #202124;
+            --accent-color: #0056b3;
+            --trans-bg: #f8f9fa;
+            --trans-border: #0056b3;
+            --nav-bg: #f8f9fa;
+            --highlight: #e8f0fe;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Roboto', 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 90px;
+            min-height: 100vh;
+            overscroll-behavior-y: none;
+        }
+
+        .content-container {
+            padding: 20px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            direction: ltr;
+        }
+
+        .text-block {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .title-text {
+            font-weight: bold;
+            font-size: 1.6rem;
+            color: #000;
+            margin-bottom: 15px;
+            display: block;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 10px;
+            direction: ltr;
+        }
+
+        .sub-title {
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: var(--accent-color);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: block;
+            direction: ltr;
+        }
+
+        .english-paragraph {
+            line-height: 2.0;
+            font-size: 1.25rem;
+            color: #333;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .interactive-word {
+            cursor: pointer;
+            border-bottom: 1px dotted #999;
+            transition: background 0.2s;
+        }
+        .interactive-word:hover {
+            background-color: #e3f2fd;
+            color: var(--accent-color);
+        }
+        .interactive-word:active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .toggle-trans-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 0;
+            direction: rtl;
+            width: 100%;
+        }
+        
+        .toggle-trans-btn:hover {
+            opacity: 0.8;
+        }
+
+        .inline-translation {
+            display: none;
+            background-color: var(--trans-bg);
+            color: #000;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 5px;
+            border-right: 4px solid var(--trans-border);
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            direction: rtl;
+            text-align: justify;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .lecture-image-container {
+            width: 100%;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .lecture-image {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: var(--nav-bg);
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+            z-index: 1000;
+            direction: rtl;
+        }
+
+        .nav-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .nav-btn:disabled {
+            background-color: #e0e0e0;
+            color: #999;
+            box-shadow: none;
+        }
+        .page-counter {
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            color: #555;
+            background: #e9ecef;
+            padding: 5px 15px;
+            border-radius: 15px;
+        }
+
+        .sheet-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 2000;
+            opacity: 0; visibility: hidden; transition: all 0.3s;
+            display: flex; align-items: flex-end;
+        }
+        .sheet-overlay.active { opacity: 1; visibility: visible; }
+        .sheet-content {
+            background: white; width: 100%; padding: 25px;
+            border-top-left-radius: 25px; border-top-right-radius: 25px;
+            transform: translateY(100%); transition: transform 0.3s;
+            text-align: center;
+        }
+        .sheet-overlay.active .sheet-content { transform: translateY(0); }
+        
+        .selected-word-box {
+            background-color: #e3f2fd;
+            border: 1px solid #bbdefb;
+            padding: 15px; border-radius: 12px;
+            margin-top: 10px;
+        }
+        .sw-container {
+            display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 5px;
+        }
+        .audio-btn {
+            background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--accent-color);
+        }
+        .sw-english {
+            font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 1.4rem; color: var(--accent-color);
+        }
+        .sw-arabic {
+            font-family: 'Cairo', sans-serif; font-size: 1.3rem; color: #333; font-weight: bold; display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content-container" id="contentArea"></div>
+
+    <div class="bottom-nav">
+        <button class="nav-btn" id="nextBtn" onclick="changePage(1)">التالي &#8592;</button>
+        <div class="page-counter" id="pageIndicator">1 / 6</div>
+        <button class="nav-btn" id="prevBtn" onclick="changePage(-1)">&#8594; السابق</button>
+    </div>
+
+    <div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet(event)">
+        <div class="sheet-content">
+            <div style="font-family:'Cairo'; color:#666; margin-bottom:10px;">معنى الكلمة:</div>
+            <div id="selectedWordBox" class="selected-word-box">
+                <div class="sw-container">
+                    <span id="swEnglish" class="sw-english"></span>
+                    <button id="audioBtn" class="audio-btn" onclick="playAudio()">🔊</button>
+                </div>
+                <span id="swArabic" class="sw-arabic"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- القاموس الشامل (طبي وعام) ---
+        const dictionary = {
+            "the": "الـ", "of": "من/لـ", "in": "في", "and": "و", "is": "هو/يكون", "bone": "عظم", "make": "تجعل",
+            "are": "هم/يكونون", "to": "إلى/لـ", "a": "أداة تنكير", "an": "أداة تنكير", "cartilage": "غضروف", "cause": "تسبب",
+            "with": "مع", "without": "بدون", "or": "أو", "by": "بواسطة", "that": "الذي/ذلك", "tumors": "أورام",
+            "which": "الذي/التي", "this": "هذا", "these": "هؤلاء/هذه", "it": "هو/هي", "rarity": "ندرة", "tumor": "ورم",
+            "can": "يمكن", "be": "يكون", "from": "من", "for": "لأجل", "on": "على", "primary": "أولي", "tissue": "النسيج",
+            "so": "لذلك", "such": "مثل", "as": "كـ/مثل", "at": "عند/في", "but": "لكن", "disfiguring": "مشوه",
+            "very": "جداً", "more": "أكثر", "less": "أقل", "most": "معظم/الأكثر", "surgery": "جراحة", "caused": "تسبب",
+            "what": "ماذا/ما", "you": "أنت", "do": "تفعل", "because": "لأن", "some": "بعض", "often": "غالباً", "produced": "منتج",
+            "when": "عندما", "where": "أين/حيث", "all": "الكل", "any": "أي", "not": "لا/ليس", "required": "مطلوب", "involve": "يشمل",
+            "often": "غالباً", "although": "رغم أن", "hence": "وبالتالي", "even": "حتى", "treat": "يعالج", "components": "مكونات",
+            "about": "تقريباً/حول", "its": "الخاص به", "their": "الخاص بهم", "has": "لديه/يملك", "malignancies": "أورام خبيثة",
+            "have": "لدينا/يملكون", "does": "يفعل", "let's": "دعنا", "say": "يقول/لنقل", "group": "مجموعة",
+            "between": "بين", "now": "الآن", "just": "فقط", "later": "لاحقاً", "only": "فقط", "disorders": "اضطرابات",
+            "if": "إذا/لو", "we": "نحن", "us": "نحن (ضمير)", "let": "دع", "into": "إلى داخل", "especially": "خصوصاً",
+            "how": "كيف", "no": "لا", "other": "آخر", "will": "سوف", "do": "يفعل", "challenging": "متحدي/صعب",
+            "after": "بعد", "before": "قبل", "in": "في", "therapy": "علاج", "aims": "يهدف", "usually": "عادةً",
+            "optimize": "تحسين", "survival": "بقاء", "while": "بينما", "maintaining": "حفاظ", "well": "جيد",
+            "function": "وظيفة", "affected": "مصاب", "body": "جسم", "parts": "أجزاء", "single": "واحد",
+            "predilection": "ميل/تفضيل", "specific": "محدد", "types": "أنواع", "certain": "معين",
+            "age": "عمر", "groups": "مجموعات", "particular": "خاص", "anatomic": "تشريحي", "part": "جزء",
+            "sites": "مواقع", "provides": "يوفر", "diagnostic": "تشخيصي", "clues": "دلائل/أدلة",
+            "example": "مثال", "osteosarcoma": "ساركوما عظمية", "peaks": "يبلغ الذروة", "during": "أثناء",
+            "adolescence": "مراهقة", "frequently": "بشكل متكرر", "involves": "يشمل/يصيب", "knee": "ركبة",
+            "whereas": "بينما", "chondrosarcoma": "ساركوما غضروفية", "affects": "يصيب", "older": "أكبر سناً",
+            "adults": "بالغين", "arises": "ينشأ", "pelvis": "حوض", "proximal": "قريب", "osteochondromas": "الأورام الغضروفية العظمية",
+            "extremities": "أطراف", "present": "يظهر/يقدم", "variety": "تنوع", "ways": "طرق", "first": "الأول",
+            "benign": "حميد", "lesions": "آفات", "asymptomatic": "بدون أعراض", "incidental": "عرضي", "near": "القرب",
+            "findings": "نتائج", "pain": "ألم", "identified": "معرف", "slow-growing": "بطيء النمو", "arise": "ينشأ",
+            "mass": "كتلة", "pathologic": "مرضي", "fracture": "كسر", "radiographic": "شعاعي", "resulting": "ناتج",
+            "imaging": "تصوير", "defines": "يحدد", "location": "موقع", "extent": "مدى", "occur": "يحدث",
+            "detect": "يكتشف", "features": "ميزات", "narrow": "يضيق", "differential": "تفاضلي", "situation": "وضع",
+            "diagnosis": "تشخيص", "biopsy": "خزعة", "necessary": "ضروري", "definitive": "نهائي", "undergo": "يخضع",
+            "almost": "تقريباً", "cases": "حالات", "classified": "مصنف", "according": "وفقاً",
+            "normal": "طبيعي", "cell": "خلية", "recapitulate": "يعيد تلخيص/يشبه", "matrix": "مصفوفة/مادة بينية",
+            "produce": "ينتج", "table": "جدول", "counterparts": "نظراء", "grouped": "مجمع",
+            "clinicopathologic": "سريري مرضي", "bone-forming": "مكون للعظم", "category": "فئة",
+            "unmineralized": "غير متمعدن", "osteoid": "عظماني", "mineralized": "متمعدن", "woven": "منسوج",
+            "osteoma": "ورم عظمي", "rare": "نادر", "lesion": "آفة", "regarded": "يعتبر",
+            "hamartoma": "ورم عابي", "rather": "بدل", "than": "من", "true": "حقيقي",
+            "neoplasm": "ورم", "exclusively": "حصرياً", "restricted": "مقصور", "flat": "مسطح",
+            "bones": "عظام", "skull": "جمجمة", "face": "وجه", "grow": "ينمو",
+            "paranasal": "جاور أنفي", "sinuses": "جيوب", "protrude": "يبرز", "orbit": "محجر العين",
+            "morphology": "مورفولوجيا (شكل)", "composed": "مكون", "well-differentiated": "جيد التمايز",
+            "mature": "ناضج", "lamellar": "صفائحي", "bony": "عظمي", "trabeculae": "ترابيق",
+            "separated": "مفصول", "fibrovascular": "ليفي وعائي", "osteoblastoma": "ورم أرومي عظمي",
+            "bone-producing": "منتج للعظم", "similar": "مشابه", "histologic": "نسيجي",
+            "differ": "يختلف", "clinically": "سريرياً", "radiographically": "إشعاعياً", "definition": "تعريف",
+            "osteomas": "أورام عظمية", "2": "2", "cm": "سم", "diameter": "قطر",
+            "common": "شائع", "young": "شاب", "men": "رجال", "50%": "50%",
+            "cortex": "قشرة", "femur": "عظم الفخذ", "tibia": "قصبة الساق", "thick": "سميك",
+            "rim": "حافة", "reactive": "تفاعلي", "cortical": "قشري", "clue": "دليل",
+            "despite": "رغم", "small": "صغير", "size": "حجم", "severe": "شديد",
+            "nocturnal": "ليلي", "probably": "محتمل", "prostaglandin": "بروستاغلاندين", "e2": "E2",
+            "osteoblasts": "أرومات عظمية", "relieved": "مخفف", "aspirin": "أسبيرين", "nonsteroidal": "غير ستيرويدي",
+            "antiinflammatory": "مضاد للالتهاب", "drugs": "أدوية", "osteoblastomas": "أورام أرومية عظمية",
+            "larger": "أكبر", "posterior": "خلفي", "vertebrae": "فقرات", "laminae": "صفائح",
+            "pedicles": "سويقات", "associated": "مرتبط", "unresponsive": "غير مستجيب", "induce": "يحث",
+            "marked": "ملحوظ", "reaction": "تفاعل", "treated": "معالج", "radiofrequency": "تردد راديوي",
+            "ablation": "استئصال", "curetted": "مكشوط", "removed": "مزالت", "en": "في",
+            "bloc": "كتلة", "excision": "استئصال", "round-to-oval": "دائري إلى بيضوي", "masses": "كتل",
+            "hemorrhagic": "نزفي", "gritty": "رملي/خشن", "tan": "أسمر", "circumscribed": "محدد",
+            "delicate": "رقيق", "interconnecting": "مترابط", "rimmed": "محاط", "layer": "طبقة",
+            "stroma": "سدى", "surrounding": "محيط", "neoplastic": "ورمي", "consists": "يتكون",
+            "loose": "رخو", "connective": "ضام", "abundant": "وفير", "dilated": "متوسع",
+            "congested": "محتقن", "capillaries": "شعيرات", "relatively": "نسبياً", "well-defined": "جيد التحديد",
+            "margins": "حواف", "cytologic": "خلوي", "help": "يساعد", "distinguish": "يميز",
+            "cartilage-forming": "مكون للغضروف", "characterized": "يتميز", "formation": "تكوين",
+            "hyaline": "زجاجي", "cartilaginous": "غضروفي", "much": "كثير", "malignant": "خبيث",
+            "ones": "واحدة", "osteochondroma": "ورم عظمي غضروفي", "exostosis": "عرن", "cartilage-capped": "مغطى بغضروف",
+            "surface": "سطح", "sessile": "لاطئ", "pedunculated": "معنق", "stalk": "سويقة",
+            "85%": "85%", "solitary": "وحيد", "remainder": "باقي", "seen": "مراى",
+            "multiple": "متعدد", "hereditary": "وراثي", "syndrome": "متلازمة", "diagnosed": "مشخص",
+            "late": "متأخر", "early": "مبكر", "adulthood": "بلوغ", "childhood": "طفولة",
+            "three": "ثلاثة", "times": "مرات", "women": "نساء", "develop": "يطور",
+            "endochondral": "داخل غضروفي", "origin": "أصل", "metaphysis": "كردوس", "growth": "نمو",
+            "plate": "صفيحة", "long": "طويل", "tubular": "أنبوبي", "painful": "مؤلم",
+            "impinge": "يضغط/يؤثر", "nerve": "عصب", "fractured": "مكسور", "detected": "مكتشف",
+            "incidentally": "عرضياً", "underlying": "تحتي", "bowed": "مقوس", "shortened": "مقصر",
+            "reflecting": "يعكس", "disturbance": "اضطراب", "epiphyseal": "مشاشي", "range": "يتراوح",
+            "1": "1", "20": "20", "cap": "غطاء", "covered": "مغطى",
+            "perichondrium": "سمحاق الغضروف", "recapitulates": "يعيد تلخيص", "undergoes": "يخضع", "ossification": "تعظم",
+            "newly": "حديثاً", "made": "مصنوع", "forming": "مكون", "inner": "داخلي",
+            "portion": "جزء", "head": "رأس", "merges": "يندمج", "host": "مضيف",
+            "continuity": "استمرارية", "medullary": "نخاعي", "cavity": "تجويف", "clinical": "سريري",
+            "stop": "يتوقف", "growing": "نمو", "closure": "انغلاق", "symptomatic": "مصحوب بأعراض",
+            "cured": "مشفي", "simple": "بسيط", "secondary": "ثانوي", "develops": "يتطور",
+            "rarely": "نادراً", "chondroma": "ورم غضروفي", "chondromas": "أورام غضروفية", "enchondromas": "أورام غضروفية داخلية",
+            "juxtacortical": "مجاور للقشرة", "individuals": "أفراد", "years": "سنوات", "typically": "نموذجياً",
+            "appear": "يظهر", "metaphyseal": "كردوسي", "hands": "أيدي", "feet": "أقدام",
+            "radiographs": "صور شعاعية", "show": "يظهر", "lucency": "شفافية", "central": "مركزي",
+            "irregular": "غير منتظم", "calcifications": "تتكلسات", "sclerotic": "متصلب", "intact": "سليم",
+            "ollier": "أوليير", "disease": "مرض", "maffucci": "مافوتشي", "development": "تطور",
+            "enchondromatosis": "ورم غضروفي داخلي متعدد", "sporadic": "فرادي", "occasionally": "أحياناً",
+            "fractures": "كسور", "smaller": "أصغر", "3": "3", "gray-blue": "رمادي أزرق",
+            "translucent": "شفاف", "benign-appearing": "حميد المظهر", "chondrocytes": "خلايا غضروفية", "embedded": "مغروز",
+            "nodules": "عقيدات", "potential": "احتمال", "limited": "محدود", "treatment": "علاج",
+            "depends": "يعتمد", "includes": "يشمل", "observation": "مراقبة", "curettage": "كشط",
+            "sarcomatous": "ساركومي", "transformation": "تحول", "contrast": "نقيض", "those": "هؤلاء",
+            "chondroblastoma": "ورم أرومي غضروفي", "tumour": "ورم", "arising": "ناشئ", "epiphysis": "مشاش",
+            "adjacent": "مجاور", "upper": "علوي", "lower": "سفلي", "humerus": "عظم العضد",
+            "occurs": "يحدث", "patients": "مرضى", "under": "تحت", "male": "ذكر",
+            "preponderance": "رجحان", "male-female": "ذكر-أنثى", "ratio": "نسبة", "2:1": "2:1",
+            "appearance": "مظهر", "sharply-circumscribed": "محدد بحدة", "lytic": "حال", "foci": "بؤر",
+            "calcification": "تتكلس", "g/a": "G/A (عيانياً)", "5": "5", "lying": "مستلقي/يقع",
+            "cut": "قطع", "reveals": "يكشف", "soft": "طري", "chondroid": "غضروفي",
+            "haemorrhages": "نزف", "necrosis": "نخر", "m/e": "M/E (مجهرياً)", "highly": "للغاية",
+            "cellular": "خلوي", "polygonal": "مضلع", "mononuclear": "وحيد النواة", "cells": "خلايا",
+            "resembling": "يشبه", "chondroblasts": "أرومات غضروفية", "multinucleate": "متعدد النوى", "osteoclast-like": "شبيه بآكلة العظم",
+            "giant": "عملاق"
+        };
+
+        const pages = [
+            // Slide 1: Bone and cartilage Tumors
+            {
+                content: [
+                    {
+                        text: "Bone and cartilage Tumors",
+                        trans: "أورام العظام والغضاريف",
+                        isTitle: true
+                    },
+                    {
+                        text: "The rarity of primary bone tumors and the disfiguring surgery often required to treat bone malignancies make this group of disorders especially challenging.",
+                        trans: "ندرة أورام العظام الأولية والجراحة المشوهة المطلوبة غالباً لعلاج سرطانات العظم تخلي هاي المجموعة من الاضطرابات صعبة (متحدية) بشكل خاص."
+                    },
+                    {
+                        text: "Therapy aims to optimize survival while maintaining the function of affected body parts.",
+                        trans: "العلاج يهدف لتحسين البقاء بينما يحافظ على وظيفة أجزاء الجسم المصابة."
+                    },
+                    {
+                        text: "The predilection of specific types of tumors for certain age groups and particular anatomic sites provides diagnostic clues.",
+                        trans: "ميل أنواع محددة من الأورام لمجموعات عمرية معينة ومواقع تشريحية خاصة يوفر دلائل تشخيصية."
+                    },
+                    {
+                        text: "For example, osteosarcoma peaks during adolescence and most frequently involves the knee, whereas chondrosarcoma affects older adults and arises most often in the pelvis and proximal extremities.",
+                        trans: "على سبيل المثال، الساركوما العظمية تبلغ ذروتها أثناء المراهقة وغالباً تصيب الركبة، بينما الساركوما الغضروفية تصيب البالغين الأكبر سناً وتنشأ غالباً بالحوض والأطراف القريبة."
+                    },
+                    {
+                        text: "Bone tumors may present in a variety of ways: benign lesions are often asymptomatic incidental findings while other tumors cause pain or are identified as a slow-growing mass or pathologic fracture.",
+                        trans: "أورام العظم ممكن تظهر بطرق متنوعة: الآفات الحميدة غالباً تكون نتائج عرضية بدون أعراض بينما أورام ثانية تسبب ألم أو تتحدد ككتلة بطيئة النمو أو كسر مرضي."
+                    },
+                    {
+                        text: "Radiographic imaging defines the location and extent of the tumor and can detect features that narrow the differential diagnosis, but biopsy is necessary for definitive diagnosis in almost all cases.",
+                        trans: "التصوير الشعاعي يحدد موقع ومدى الورم ويكدر يكتشف ميزات تضيق التشخيص التفاضلي، بس الخزعة ضرورية للتشخيص النهائي بكل الحالات تقريباً."
+                    },
+                    {
+                        text: "Bone tumors are classified according to the normal cell types they recapitulate or the matrix they produce (Table 19.1).",
+                        trans: "أورام العظم تتصنف وفقاً لأنواع الخلايا الطبيعية اللي تشبهها أو المصفوفة اللي تنتجها (جدول 19.1)."
+                    },
+                    {
+                        text: "Lesions that do not have normal tissue counterparts are grouped according to their clinicopathologic features.",
+                        trans: "الآفات اللي ما عدها نظراء نسيج طبيعي تتجمع وفقاً لميزاتها السريرية المرضية."
+                    },
+                    {
+                        text: "Bone-Forming Tumors: Tumors in this category produce unmineralized osteoid or mineralized woven bone.",
+                        trans: "أورام تكوين العظم: الأورام بهاي الفئة تنتج عظموم غير متمعدن أو عظم منسوج متمعدن."
+                    },
+                    {
+                        text: "Osteoma: An osteoma is a rare benign, slow-growing lesion, regarded by some as a hamartoma rather than a true neoplasm.",
+                        trans: "الورم العظمي (Osteoma): هو آفة حميدة نادرة، بطيئة النمو، يعتبرها البعض ورم عابي (hamartoma) بدل ما تكون ورم حقيقي."
+                    },
+                    {
+                        text: "Osteoma is almost exclusively",
+                        trans: "الورم العظمي تقريباً حصرياً"
+                    }
+                ]
+            },
+            // Slide 2: Osteoma (cont.) & Osteoid Osteoma
+            {
+                content: [
+                    {
+                        text: "restricted to flat bones of the skull and face. It may grow into paranasal sinuses or protrude into the orbit.",
+                        trans: "مقصور على العظام المسطحة للجمجمة والوجه. ممكن ينمو لداخل الجيوب الأنفية أو يبرز لداخل محجر العين."
+                    },
+                    {
+                        text: "Morphology : The lesion is composed of well-differentiated mature lamellar bony trabeculae separated by fibrovascular tissue.",
+                        trans: "المورفولوجيا: الآفة تتكون من ترابيق عظمية صفائحية ناضجة جيدة التمايز مفصولة بنسيج ليفي وعائي."
+                    },
+                    {
+                         // (اهناي اكو صورة ) في السلايد الثاني
+                         type: 'image',
+                         src: 'osteoma_histology.jpg'
+                    },
+                    {
+                        text: "Osteoid Osteoma and Osteoblastoma",
+                        trans: "الورم العظمي العظماني والورم الأرومي العظمي",
+                        isSubTitle: true
+                    },
+                    {
+                        text: "Osteoid osteoma and osteoblastoma are benign bone-producing tumors that have similar histologic features but differ clinically and radiographically.",
+                        trans: "الورم العظمي العظماني والورم الأرومي العظمي هما أورام حميدة منتجة للعظم عدها ميزات نسيجية متشابهة بس تختلف سريرياً وإشعاعياً."
+                    },
+                    {
+                        text: "By definition, osteoid osteomas are less than 2 cm in diameter. They are most common in young men.",
+                        trans: "حسب التعريف، الأورام العظمية العظمانية تكون أقل من 2 سم بالقطر. هي أكثر شيوعاً بالرجال الشباب."
+                    },
+                    {
+                        text: "About 50% of cases involve the cortex of the femur or tibia. A thick rim of reactive cortical bone may be the only radiographic clue.",
+                        trans: "حوالي 50% من الحالات تصيب قشرة عظم الفخذ أو قصبة الساق. حافة سميكة من عظم قشري تفاعلي ممكن تكون الدليل الشعاعي الوحيد."
+                    }
+                ]
+            },
+            // Slide 3: Osteoid Osteoma (cont.) & Morphology
+            {
+                content: [
+                    {
+                        text: "Despite their small size, they present with severe nocturnal pain that is probably caused by prostaglandin E2 produced by osteoblasts and is relieved by aspirin and other nonsteroidal antiinflammatory drugs.",
+                        trans: "رغم حجمهم الصغير، يظهرون بألم ليلي شديد محتمل يكون مسبب بواسطة بروستاغلاندين E2 المنتج من الأرومات العظمية ويخف بالأسبرين وأدوية مضادة للالتهاب غير الستيرويدية الثانية."
+                    },
+                    {
+                        text: "Osteoblastomas are larger than 2 cm and more frequently involve the posterior components of the vertebrae (laminae and pedicles).",
+                        trans: "الأورام الأرومية العظمية أكبر من 2 سم وبشكل متكرر أكثر تصيب المكونات الخلفية للفقرات (الصفائح والسويقات)."
+                    },
+                    {
+                        text: "Any associated pain is unresponsive to aspirin and the tumor usually does not induce a marked bony reaction.",
+                        trans: "أي ألم مرتبط يكون غير مستجيب للأسبرين والورم عادة ما يحث تفاعل عظمي ملحوظ."
+                    },
+                    {
+                        text: "Osteoid osteoma can be treated by radiofrequency ablation, whereas osteoblastoma is usually curetted or removed by en bloc excision.",
+                        trans: "الورم العظمي العظماني ممكن علاجه باستئصال التردد الراديوي، بينما الورم الأرومي العظمي عادة يكشط أو ينشال باستئصال كتلة واحدة."
+                    },
+                    {
+                        text: "MORPHOLOGY",
+                        trans: "المورفولوجيا",
+                        isSubTitle: true
+                    },
+                    {
+                        text: "Osteoid osteoma and osteoblastoma are round-to-oval masses of hemorrhagic gritty tan tissue.",
+                        trans: "الورم العظمي العظماني والورم الأرومي العظمي هما كتل دائرية لبيضوي من نسيج أسمر رملي نزفي."
+                    },
+                    {
+                        text: "They are well circumscribed and composed of delicate interconnecting trabeculae of woven bone that are rimmed by a single layer of osteoblasts.",
+                        trans: "هما محددات جيداً ويتكونون من ترابيق مترابطة رقيقة من عظم منسوج محاطة بطبقة واحدة من الأرومات العظمية."
+                    },
+                    {
+                        text: "The stroma surrounding the neoplastic bone consists of loose connective tissue with abundant dilated and congested capillaries.",
+                        trans: "السدى المحيط بالعظم الورمي يتكون من نسيج ضام رخو مع شعيرات دموية متوسعة ومحتقنة وفيرة."
+                    },
+                    {
+                        text: "The relatively small size, well-defined margins, and benign cytologic features of the neoplastic osteoblasts help distinguish these tumors from osteosarcoma.",
+                        trans: "الحجم الصغير نسبياً، الحواف محددة جيداً، والميزات الخلوية الحميدة للأرومات العظمية الورمية تساعد بتمييز هاي الأورام عن الساركوما العظمية."
+                    },
+                    {
+                        text: "Cartilage-Forming Tumors: These tumors are characterized by the formation of hyaline cartilage. Benign cartilaginous tumors are much more common than malignant ones.",
+                        trans: "أورام تكوين الغضروف: هاي الأورام تتميز بتكوين غضروف زجاجي. الأورام الغضروفية الحميدة أكثر شيوعاً بهواية من الخبيثة."
+                    },
+                    {
+                        text: "Osteochondroma: Osteochondroma, or exostosis, is a benign, cartilage-capped tumor that arises from the bone surface.",
+                        trans: "الورم العظمي الغضروفي (Osteochondroma)، أو العرن، هو ورم حميد، مغطى بغضروف ينشأ من سطح العظم."
+                    },
+                    {
+                        text: "It may be sessile or pedunculated with a bony stalk. About 85% are solitary.",
+                        trans: "ممكن يكون لاطئ أو معنق بسويقة عظمية. حوالي 85% تكون وحيدة."
+                    },
+                    {
+                        text: "The remainder are seen as part of the multiple hereditary exostosis syndrome. Solitary osteochondromas are usually first",
+                        trans: "البقية تنشاف كجزء من متلازمة العرن الوراثي المتعدد. الأورام العظمية الغضروفية الوحيدة عادة أول شي"
+                    }
+                ]
+            },
+            // Slide 4: Osteochondroma (cont.) & Morphology
+            {
+                content: [
+                    {
+                        text: "diagnosed in late adolescence and early adulthood, whereas multiple osteochondromas present during childhood.",
+                        trans: "تتشخص بمرحلة المراهقة المتأخرة وبداية البلوغ، بينما المتعددة تظهر أثناء الطفولة."
+                    },
+                    {
+                        text: "Men are affected three times more often than women.",
+                        trans: "الرجال ينصابون ثلاث مرات أكثر من النساء."
+                    },
+                    {
+                        text: "Osteochondromas develop in bones of endochondral origin and arise from the metaphysis near the growth plate of long tubular bones, especially near the knee.",
+                        trans: "تتطور بعظام من أصل داخل غضروفي وتنشأ من الكردوس قرب صفيحة النمو للعظام الأنبوبية الطويلة، خصوصاً قرب الركبة."
+                    },
+                    {
+                        text: "They are slow-growing masses that can be painful if they impinge on a nerve or if the stalk is fractured. In many cases they are detected incidentally.",
+                        trans: "هي كتل بطيئة النمو ممكن تكون مؤلمة إذا ضغطت على عصب أو إذا السويقة انكسرت. بهواية حالات تكتشف عرضياً."
+                    },
+                    {
+                        text: "In multiple hereditary exostoses, the underlying bones may be bowed and shortened, reflecting an associated disturbance in epiphyseal growth.",
+                        trans: "بالعرن الوراثي المتعدد، العظام التحتية ممكن تكون مقوسة ومقصرة، تعكس اضطراب مرتبط بالنمو المشاشي."
+                    },
+                    {
+                        text: "MORPHOLOGY",
+                        trans: "المورفولوجيا",
+                        isSubTitle: true
+                    },
+                    {
+                        text: "Osteochondromas range in size from 1 to 20 cm. The cap is composed of hyaline cartilage covered by perichondrium.",
+                        trans: "الأورام تتراوح بالحجم من 1 لـ 20 سم. الغطاء يتكون من غضروف زجاجي مغطى بسمحاق الغضروف."
+                    },
+                    {
+                        text: "The cartilage recapitulates the growth plate and undergoes endochondral ossification, with the newly made bone forming the inner portion of the head and stalk.",
+                        trans: "الغضروف يشبه صفيحة النمو ويخضع لتعظم داخل غضروفي، ويا العظم المصنوع حديثاً يكون الجزء الداخلي للرأس والسويقة."
+                    },
+                    {
+                        text: "The cortex of the stalk merges with the cortex of the host bone resulting in continuity between the medullary cavity of the osteochondroma and the host bone.",
+                        trans: "قشرة السويقة تندمج ويا قشرة العظم المضيف ناتجة استمرارية بين التجويف النخاعي للورم والعظم المضيف."
+                    },
+                    {
+                        text: "Clinical Features: Osteochondromas usually stop growing at the time of growth plate closure and, when symptomatic, are cured by simple excision.",
+                        trans: "الميزات السريرية: الأورام عادة تتوقف نمو بوقت انغلاق صفيحة النمو، ومن تكون مصحوبة بأعراض، تنشفي باستئصال بسيط."
+                    },
+                    {
+                        text: "Secondary chondrosarcoma develops only rarely, usually in tumors associated with multiple hereditary exostosis.",
+                        trans: "الساركوما الغضروفية الثانوية تتطور نادراً بس، عادة بالأورام المرتبطة بالعرن الوراثي المتعدد."
+                    }
+                ]
+            },
+            // Slide 5: Chondroma
+            {
+                content: [
+                    {
+                        text: "Chondroma",
+                        trans: "الورم الغضروفي",
+                        isSubTitle: true
+                    },
+                    {
+                        text: "Chondromas are benign tumors of hyaline cartilage that occur in bones of endochondral origin.",
+                        trans: "الأورام الغضروفية هي أورام حميدة من غضروف زجاجي تصير بعظام من أصل داخل غضروفي."
+                    },
+                    {
+                        text: "Tumors can arise within the medullary cavity (enchondromas) or, rarely, on the bone surface (juxtacortical chondromas).",
+                        trans: "الأورام ممكن تنشأ داخل التجويف النخاعي (أورام غضروفية داخلية) أو، نادراً، على سطح العظم (أورام غضروفية مجاورة للقشرة)."
+                    },
+                    {
+                        text: "Enchondromas are usually diagnosed in individuals 20 to 50 years of age. Typically, they appear as solitary metaphyseal lesions of the tubular bones of the hands and feet.",
+                        trans: "الأورام الداخلية عادة تتشخص بأفراد عمرهم 20 لـ 50 سنة. نموذجياً، تظهر كآفات كردوسية وحيدة بالعظام الأنبوبية لليدين والقدمين."
+                    },
+                    {
+                        text: "Radiographs show a circumscribed lucency with central irregular calcifications, a sclerotic rim, and an intact cortex.",
+                        trans: "الصور الشعاعية تظهر شفافية محددة ويا تكلسات غير منتظمة مركزية، حافة متصلبة، وقشرة سليمة."
+                    },
+                    {
+                        text: "Ollier disease and Maffucci syndrome are disorders characterized by the development of multiple enchondromas (enchondromatosis).",
+                        trans: "مرض أوليير ومتلازمة مافوتشي هي اضطرابات تتميز بتطور أورام غضروفية داخلية متعددة."
+                    },
+                    {
+                        text: "Most sporadic enchondromas of large bones are asymptomatic and are detected incidentally, but they occasionally cause painful pathologic fractures.",
+                        trans: "معظم الأورام الداخلية الفرادية للعظام الكبيرة تكون بدون أعراض وتكتشف عرضياً، بس هي أحياناً تسبب كسور مرضية مؤلمة."
+                    },
+                    {
+                        text: "MORPHOLOGY",
+                        trans: "المورفولوجيا",
+                        isSubTitle: true
+                    },
+                    {
+                        text: "Chondromas are usually smaller than 3 cm, gray-blue, and translucent. They are composed of benign-appearing chondrocytes embedded in well circumscribed nodules of hyaline cartilage.",
+                        trans: "الأورام عادة أصغر من 3 سم، رمادية-زرقاء، وشفافة. هي تتكون من خلايا غضروفية مظهرها حميد مغروزة بعقيدات محددة جيداً من غضروف زجاجي."
+                    },
+                    {
+                        text: "Clinical Features: The growth potential of enchondromas is limited. Treatment depends on the clinical situation and usually includes observation or curettage.",
+                        trans: "الميزات السريرية: احتمال النمو للأورام الداخلية محدود. العلاج يعتمد عالوضع السريري وعادة يشمل مراقبة أو كشط."
+                    },
+                    {
+                        text: "Solitary enchondromas rarely undergo sarcomatous transformation; by contrast, those associated with enchondromatosis do so more frequently.",
+                        trans: "الأورام الوحيدة نادراً تخضع لتحول ساركومي؛ على النقيض، المرتبطة بتعدد الأورام تسوي هيج بشكل متكرر أكثر."
+                    }
+                ]
+            },
+            // Slide 6: Chondroblastoma
+            {
+                content: [
+                    {
+                        text: "Chondroblastoma",
+                        trans: "الورم الأرومي الغضروفي",
+                        isSubTitle: true
+                    },
+                    {
+                        text: "Chondroblastoma is a relatively rare benign tumour arising from the epiphysis of long bones adjacent to the epiphyseal cartilage plate.",
+                        trans: "الورم الأرومي الغضروفي هو ورم حميد نادر نسبياً ينشأ من المشاش للعظام الطويلة مجاور لصفيحة الغضروف المشاشية."
+                    },
+                    {
+                        text: "Most commonly affected bones are upper tibia and lower femur (i.e. about knee) and upper humerus.",
+                        trans: "العظام المصابة الأكثر شيوعاً هي أعلى قصبة الساق وأسفل الفخذ (يعني حول الركبة) وأعلى العضد."
+                    },
+                    {
+                        text: "The tumour usually occurs in patients under 20 years of age with male preponderance (male-female ratio 2:1).",
+                        trans: "الورم عادة يصير بمرضى تحت 20 سنة من العمر مع رجحان للذكور (نسبة ذكر-أنثى 2:1)."
+                    },
+                    {
+                        text: "The radiographic appearance is of a sharply-circumscribed, lytic lesion with multiple small foci of calcification.",
+                        trans: "المظهر الشعاعي هو لآفة حالّة، محددة بحدة ويا بؤر صغيرة متعددة للتكلس."
+                    },
+                    {
+                        text: "G/A is a well-defined mass, up to 5 cm in diameter, lying in the epiphysis. Cut surface reveals a soft chondroid tumour with foci of haemorrhages, necrosis and calcification.",
+                        trans: "عيانياً هي كتلة محددة جيداً، لحد 5 سم بالقطر، تقع بالمشاش. سطح القطع يكشف ورم غضروفي طري ويا بؤر نزف، نخر وتكلس."
+                    },
+                    {
+                        text: "M/E The tumour is highly cellular and is composed of small, round to polygonal mononuclear cells resembling chondroblasts and has multinucleate osteoclast-like giant cells.",
+                        trans: "مجهرياً الورم خلوي للغاية ويتكون من خلايا وحيدة النواة صغيرة، دائرية لمضلعة تشبه الأرومات الغضروفية وبيها خلايا عملاقة متعددة النوى تشبه آكلة العظم."
+                    }
+                ]
+            }
+        ];
+
+        let currentIndex = 0;
+
+        function renderPage() {
+            const container = document.getElementById('contentArea');
+            const data = pages[currentIndex];
+            
+            document.getElementById('pageIndicator').innerText = `${currentIndex + 1} / ${pages.length}`;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === pages.length - 1;
+
+            let html = '';
+            
+            data.content.forEach((item, idx) => {
+                if (item.type === 'image') {
+                    html += `
+                        <div class="lecture-image-container">
+                            <img src="${item.src}" alt="Lecture Figure" class="lecture-image">
+                        </div>
+                    `;
+                } else {
+                    let cssClass = "english-paragraph";
+                    if (item.isTitle) cssClass = "title-text";
+                    if (item.isSubTitle) cssClass = "sub-title";
+
+                    const words = item.text.split(' ');
+                    let interactiveText = '';
+                    words.forEach(word => {
+                        const cleanWordForLookup = word.replace(/[.,()?!:;“”"°\[\]]/g, '').toLowerCase();
+                        interactiveText += `<span class="interactive-word" onclick="showWordMeaning('${cleanWordForLookup}', '${word}')">${word}</span> `;
+                    });
+
+                    html += `
+                        <div class="text-block">
+                            <div class="${cssClass}">
+                                ${interactiveText}
+                            </div>
+                            <button class="toggle-trans-btn" onclick="toggleTranslation('trans-${idx}')">
+                                إظهار الترجمة &#11015;
+                            </button>
+                            <div id="trans-${idx}" class="inline-translation">
+                                ${item.trans}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+            window.scrollTo(0,0);
+        }
+
+        function toggleTranslation(id) {
+            const el = document.getElementById(id);
+            if (el.style.display === "block") {
+                el.style.display = "none";
+            } else {
+                el.style.display = "block";
+            }
+        }
+
+        let currentWordForAudio = "";
+
+        function showWordMeaning(cleanWord, originalWord) {
+            const translation = dictionary[cleanWord] || "---"; 
+            
+            currentWordForAudio = originalWord.replace(/[.,()?!:;“”"°\[\]]/g, '');
+
+            const box = document.getElementById('selectedWordBox');
+            const enSpan = document.getElementById('swEnglish');
+            const arSpan = document.getElementById('swArabic');
+
+            enSpan.innerText = currentWordForAudio; 
+            arSpan.innerText = translation;
+
+            const overlay = document.getElementById('sheetOverlay');
+            overlay.classList.add('active');
+        }
+
+        function playAudio() {
+            if (currentWordForAudio) {
+                const utterance = new SpeechSynthesisUtterance(currentWordForAudio);
+                utterance.lang = 'en-US'; 
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function closeSheet(e) {
+            if (e.target.id === 'sheetOverlay') {
+                const overlay = document.getElementById('sheetOverlay');
+                overlay.classList.remove('active');
+            }
+        }
+
+        function changePage(dir) {
+            currentIndex += dir;
+            renderPage();
+        }
+
+        renderPage();
+
+    </script>
+</body>
+</html>
